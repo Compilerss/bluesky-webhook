@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import requests
+import json
 
 app = Flask(__name__)
 
@@ -10,17 +11,21 @@ def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
-        "text": message,
-        "parse_mode": "HTML"
+        "text": message
     }
     response = requests.post(url, json=payload)
     return response.json()
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.get_json(silent=True) or {}
-    message = data.get("message", str(data))
-    result = send_telegram(f"📊 <b>BlueSky Alert</b>\n\n{message}")
+    try:
+        raw = request.data.decode("utf-8")
+        data = json.loads(raw)
+        message = data.get("message", raw)
+    except:
+        message = request.data.decode("utf-8")
+    
+    result = send_telegram(message)
     return jsonify({"status": "ok", "telegram": result})
 
 @app.route("/", methods=["GET"])
