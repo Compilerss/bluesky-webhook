@@ -25,23 +25,7 @@ def webhook():
 
 @app.route("/", methods=["GET"])
 def health():
-    return "BlueSky Webhook is running! ✅"
+    return "BlueSky Webhook is running!"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-```
-
----
-
-## File 2: `requirements.txt`
-```
-flask
-requests
-gunicorn
-```
-
----
-
-## File 3: `Procfile`
-```
-web: gunicorn app:app
