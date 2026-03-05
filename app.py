@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import requests
 import json
+import re
 
 app = Flask(__name__)
 
@@ -24,9 +25,12 @@ def webhook():
         message = data.get("message", raw)
     except:
         message = request.data.decode("utf-8")
-    
+
+    # Clean \n to real new lines
+    message = message.replace("\\n", "\n")
+
     result = send_telegram(message)
-    return jsonify({"status": "ok", "telegram": result})
+    return jsonify({"status": "ok"})
 
 @app.route("/", methods=["GET"])
 def health():
